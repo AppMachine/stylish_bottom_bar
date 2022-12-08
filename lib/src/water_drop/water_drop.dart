@@ -6,14 +6,15 @@ class WaterDrop extends StatefulWidget {
   final double left;
   final Size size;
   final Widget child;
+  final Color? backgroundColor;
 
-  const WaterDrop({
-    super.key,
-    required this.size,
-    required this.child,
-    required this.top,
-    required this.left,
-  });
+  const WaterDrop(
+      {super.key,
+      required this.size,
+      required this.child,
+      required this.top,
+      required this.left,
+      this.backgroundColor});
 
   @override
   State<WaterDrop> createState() => __WaterDropState();
@@ -32,33 +33,23 @@ class __WaterDropState extends State<WaterDrop> {
       });
     }
 
-    Widget childWithGradient = Container(
-      foregroundDecoration: BoxDecoration(
-        // backgroundBlendMode: BlendMode.overlay,
-        backgroundBlendMode: BlendMode.colorBurn,
-      ),
-      child: widget.child,
+    Widget child = Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          alignment: Alignment.center,
+          height: 50,
+          width: 50,
+          decoration: BoxDecoration(
+              color: widget.backgroundColor,
+              borderRadius: BorderRadius.circular(28)),
+        ),
+        widget.child
+      ],
     );
 
     return Stack(
-      children: [
-        _OvalShadow(
-          width: widget.size.width,
-          height: widget.size.height,
-        ),
-        ClipPath(
-          clipper: _OvalClipper(
-              center: center,
-              width: widget.size.width,
-              height: widget.size.height),
-          clipBehavior: Clip.hardEdge,
-          child: childWithGradient,
-        ),
-        _LightDot(
-          width: widget.size.width,
-          height: widget.size.height,
-        ),
-      ],
+      children: [Container(child: child)],
     );
   }
 
@@ -71,86 +62,7 @@ class __WaterDropState extends State<WaterDrop> {
 
   ///Map Center and Size to Alignment
   Alignment getAlignment(Size size) => Alignment(
-        (center.dx - size.width / 2.25) / (size.width / 2.25),
-        (center.dy - size.height / 2.25) / (size.height / 2.25),
+        (center.dx - size.width / 2) / (size.width / 2),
+        (center.dy - size.height / 2) / (size.height / 2),
       );
-}
-
-class _OvalClipper extends CustomClipper<Path> {
-  final Offset center;
-  final double height, width;
-
-  _OvalClipper(
-      {required this.center, required this.width, required this.height});
-
-  @override
-  Path getClip(Size size) {
-    Path path = Path()
-      ..addOval(Rect.fromCenter(
-        width: width,
-        height: height,
-        center: center,
-      ));
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => true;
-}
-
-class _LightDot extends StatelessWidget {
-  final double width, height;
-
-  const _LightDot({Key? key, required this.width, required this.height})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      left: width / 5,
-      top: height / 5,
-      width: width / 5,
-      height: height / 5,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 2.25,
-              color: Colors.white.withOpacity(0.9),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _OvalShadow extends StatelessWidget {
-  final double width;
-  final double height;
-
-  const _OvalShadow({Key? key, required this.width, required this.height})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      width: width,
-      height: height,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(width / 2),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 3,
-              offset: const Offset(3, 3),
-              color: Colors.black.withOpacity(0.5),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
