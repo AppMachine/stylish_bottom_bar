@@ -29,7 +29,7 @@ class __WaterDropState extends State<WaterDrop> {
     /// Rebuild the widget if [totalSize] is null
     if (totalSize == null) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
-        setState(() => totalSize = context.size!);
+        setState(() => totalSize = context.size);
       });
     }
 
